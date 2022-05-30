@@ -1,4 +1,5 @@
 #
+
 import math
 from keybow2040 import Keybow2040, number_to_xy, hsv_to_rgb
 # from keybow_hardware.pim56x import PIM56X as Hardware # for Keybow 2040
@@ -20,32 +21,29 @@ for index in range(16):
 keyboard = Keyboard(usb_hid.devices)
 layout = KeyboardLayoutUS(keyboard)
 
-SHORTS = [
-  "0",
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  ]
+from shortcuts import SHORTCUTS
 
 MAP = {}
 
 for index in range(16):
-    MAP[keys[index]] = SHORTS[index]
+    MAP[keys[index]] = SHORTCUTS[index]
+
     def press_handler(key):
-        layout.write(MAP[key])
-    keybow.on_press(keys[index], handler=press_handler)
+        if isinstance(MAP[key], str):
+            layout.write(MAP[key])
+        else:
+            for kc in MAP[key]:
+                if isinstance(kc, str):
+                    layout.write(kc)
+                else:
+                    keyboard.send(*kc)
+                    pass
+                pass
+            pass
+        pass
+
+    if SHORTCUTS[index]:
+        keybow.on_press(keys[index], handler=press_handler)
 
 
 def rainbow(step):
